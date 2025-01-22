@@ -4,26 +4,76 @@
 #include <math.h>
 #include <string.h>
 
-// Function to apply an operator to two operands
-double applyOperator(double a, double b, char op) {
-    switch (op) {
-        case '+': return a + b;
-        case '-': return a - b;
-        case '*': return a * b;
-        case '/':
-            if (b == 0) {
-                printf("Error: Division by zero, learn some maths first dumbo!\n");
-                exit(1);  // Exit the program due to division by zero
-            }
-            return a / b;
-        case '^': return pow(a, b);
-        default:
-            printf("Error: Invalid operator stop torturing my calci\n");
-            exit(1);  // Exit the program due to invalid operator
-    }
+#define INITIAL_STACK_SIZE 100
+
+// Dynamic stack structure for values and operators
+typedef struct {
+    double *values;
+    char *operators;
+    int valuesTop;
+    int operatorsTop;
+    int capacity;
+} CalculatorStack;
+
+// Function prototypes
+CalculatorStack *createStack(int capacity);
+void freeStack(CalculatorStack *stack);
+void pushValue(CalculatorStack *stack, double value);
+double popValue(CalculatorStack *stack);
+void pushOperator(CalculatorStack *stack, char op);
+char popOperator(CalculatorStack *stack);
+int precedence(char op);
+double applyOperator(double a, double b, char op);
+double evaluateExpression(const char *expr, int precision);
+void validateExpression(const char *expr);
+
+// Create a dynamic stack
+CalculatorStack *createStack(int capacity) {
+    CalculatorStack *stack = (CalculatorStack *)malloc(sizeof(CalculatorStack));
+    stack->values = (double *)malloc(capacity * sizeof(double));
+    stack->operators = (char *)malloc(capacity * sizeof(char));
+    stack->valuesTop = -1;
+    stack->operatorsTop = -1;
+    stack->capacity = capacity;
+    return stack;
 }
 
-// Function to determine operator precedence
+// Free the dynamic stack
+void freeStack(CalculatorStack *stack) {
+    free(stack->values);
+    free(stack->operators);
+    free(stack);
+}
+
+// Push a value onto the stack
+void pushValue(CalculatorStack *stack, double value) {
+    if (stack->valuesTop == stack->capacity - 1) {
+        stack->capacity *= 2;
+        stack->values = (double *)realloc(stack->values, stack->capacity * sizeof(double));
+    }
+    stack->values[++stack->valuesTop] = value;
+}
+
+// Pop a value from the stack
+double popValue(CalculatorStack *stack) {
+    return stack->values[stack->valuesTop--];
+}
+
+// Push an operator onto the stack
+void pushOperator(CalculatorStack *stack, char op) {
+    if (stack->operatorsTop == stack->capacity - 1) {
+        stack->capacity *= 2;
+        stack->operators = (char *)realloc(stack->operators, stack->capacity * sizeof(char));
+    }
+    stack->operators[++stack->operatorsTop] = op;
+}
+
+// Pop an operator from the stack
+char popOperator(CalculatorStack *stack) {
+    return stack->operators[stack->operatorsTop--];
+}
+
+// Determine operator precedence
 int precedence(char op) {
     if (op == '+' || op == '-') return 1;
     if (op == '*' || op == '/') return 2;
@@ -31,18 +81,54 @@ int precedence(char op) {
     return 0;
 }
 
-// Function to evaluate the expression
-double evaluateExpression(const char *expr) {
-    double values[100]; // Stack for numbers
-    char operators[100]; // Stack for operators
-    int valuesTop = -1, operatorsTop = -1; // Stack pointers
+// Apply an operator to two operands
+double applyOperator(double a, double b, char op) {
+    switch (op) {
+        case '+': return a + b;
+        case '-': return a - b;
+        case '*': return a * b;
+        case '/':
+            if (b == 0) {
+                printf("Error: Division by zero is not allowed.\n");
+                return NAN;
+            }
+            return a / b;
+        case '^': return pow(a, b);
+        default:
+            printf("Error: Invalid operator.\n");
+            return NAN;
+    }
+}
 
-    int i; // Declare the loop variable outside the for loop cuz this compiler is the worst and throws wild errors
-    for (i = 0; i < strlen(expr); i++) {
-        if (isspace(expr[i])) continue; // Ignore spaces
+// Validate the expression for mismatched parentheses and invalid characters
+void validateExpression(const char *expr) {
+    int openParentheses = 0;
+    for (int i = 0; i < strlen(expr); i++) {
+        if (expr[i] == '(') openParentheses++;
+        if (expr[i] == ')') openParentheses--;
+        if (openParentheses < 0) {
+            printf("Error: Mismatched parentheses.\n");
+            exit(1);
+        }
+        if (!isdigit(expr[i]) && !isspace(expr[i]) && expr[i] != '.' && expr[i] != '(' && expr[i] != ')' && !strchr("+-*/^", expr[i])) {
+            printf("Error: Invalid character '%c' in expression.\n", expr[i]);
+            exit(1);
+        }
+    }
+    if (openParentheses != 0) {
+        printf("Error: Mismatched parentheses.\n");
+        exit(1);
+    }
+}
+
+// Evaluate the expression
+double evaluateExpression(const char *expr, int precision) {
+    CalculatorStack *stack = createStack(INITIAL_STACK_SIZE);
+
+    for (int i = 0; i < strlen(expr); i++) {
+        if (isspace(expr[i])) continue;
 
         if (isdigit(expr[i]) || expr[i] == '.') {
-            // Parse a number (including decimals)
             double value = 0;
             int isDecimal = 0;
             double decimalDivisor = 1;
@@ -58,61 +144,68 @@ double evaluateExpression(const char *expr) {
                 }
                 i++;
             }
-            values[++valuesTop] = value;
-            i--; // Adjust index to process correctly
+            pushValue(stack, value);
+            i--;
         } else if (expr[i] == '(') {
-            operators[++operatorsTop] = expr[i]; // Push '(' onto the operators stack, its important if you are giving expressions to the calci although why are you doing that in the first place !!!!!
+            pushOperator(stack, expr[i]);
         } else if (expr[i] == ')') {
-            // Solve the expression inside parentheses
-            while (operatorsTop >= 0 && operators[operatorsTop] != '(') {
-                double b = values[valuesTop--];
-                double a = values[valuesTop--];
-                char op = operators[operatorsTop--];
-                values[++valuesTop] = applyOperator(a, b, op);
+            while (stack->operatorsTop >= 0 && stack->operators[stack->operatorsTop] != '(') {
+                double b = popValue(stack);
+                double a = popValue(stack);
+                char op = popOperator(stack);
+                pushValue(stack, applyOperator(a, b, op));
             }
-            operatorsTop--; // Remove '(' from the stack, ofc !
+            popOperator(stack);
         } else {
-            // Handle operators
-            while (operatorsTop >= 0 && precedence(operators[operatorsTop]) >= precedence(expr[i])) {
-                double b = values[valuesTop--];
-                double a = values[valuesTop--];
-                char op = operators[operatorsTop--];
-                values[++valuesTop] = applyOperator(a, b, op);
+            while (stack->operatorsTop >= 0 && precedence(stack->operators[stack->operatorsTop]) >= precedence(expr[i])) {
+                double b = popValue(stack);
+                double a = popValue(stack);
+                char op = popOperator(stack);
+                pushValue(stack, applyOperator(a, b, op));
             }
-            operators[++operatorsTop] = expr[i];
+            pushOperator(stack, expr[i]);
         }
     }
 
-    // Perform the remaining operations
-    while (operatorsTop >= 0) {
-        double b = values[valuesTop--];
-        double a = values[valuesTop--];
-        char op = operators[operatorsTop--];
-        values[++valuesTop] = applyOperator(a, b, op);
+    while (stack->operatorsTop >= 0) {
+        double b = popValue(stack);
+        double a = popValue(stack);
+        char op = popOperator(stack);
+        pushValue(stack, applyOperator(a, b, op));
     }
 
-    return values[valuesTop];
+    double result = popValue(stack);
+    freeStack(stack);
+    return round(result * pow(10, precision)) / pow(10, precision);
 }
 
 int main() {
     char expression[256];
+    int precision;
 
-    printf("Simple Calculator (Enter Ctrl+D to exit)\n");
-    printf("Enter an expression: ");
+    printf("Welcome to SmartCalc!\n");
+    printf("Enter the desired precision for results: ");
+    scanf("%d", &precision);
+    getchar(); // Consume newline after precision input
+
+    printf("\nEnter mathematical expressions (Ctrl+D to exit):\n");
 
     while (fgets(expression, sizeof(expression), stdin)) {
-        // Remove trailing newline character
         size_t len = strlen(expression);
         if (expression[len - 1] == '\n') {
             expression[len - 1] = '\0';
         }
 
-        // Evaluate the expression
-        double result = evaluateExpression(expression);
-        printf("Result: %.2lf\n", result);
+        validateExpression(expression);
 
-        printf("Enter another expression: ");
+        double result = evaluateExpression(expression, precision);
+        if (!isnan(result)) {
+            printf("Result: %.*lf\n", precision, result);
+        }
+
+        printf("\nEnter another expression: ");
     }
 
+    printf("\nThank you for using SmartCalc!\n");
     return 0;
 }
