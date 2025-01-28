@@ -6,7 +6,7 @@ int word_count = 0;
 %%
 target_word   { word_count++; }
 %%
-
+int yywrap(){}
 int main() {
     printf("Enter the word to search: ");
     scanf("%s", target_word);

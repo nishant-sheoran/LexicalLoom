@@ -7,7 +7,7 @@ int balance = 0;
 \(           { balance++; }
 \)           { balance--; }
 %%
-
+int yywrap(){}
 int main() {
     yylex();
     if (balance == 0) printf("Well-formed parenthesis.\n");
