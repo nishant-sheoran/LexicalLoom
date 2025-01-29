@@ -2,7 +2,7 @@
 .vscode/
 
 # Ignore generated compiled files
-lex.yy
+lex.yy.c
 a.exe
 
 # Ignore other unnecessary system files

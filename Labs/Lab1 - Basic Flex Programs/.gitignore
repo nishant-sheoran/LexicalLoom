@@ -1,5 +1,13 @@
-# Ignore VS Code settings
+# Ignore vs code setting
 .vscode/
-
-# Ignore build files
 build/
+*.exe
+*.o
+
+# Ignore generated compiled files
+lex.yy.c
+a.exe
+
+# Ignore other unnecessary system files
+*.o
+*.out
