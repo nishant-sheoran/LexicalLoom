@@ -42,11 +42,19 @@ Before running the code, ensure you have the following tools installed:
    ```
 
 6. **Run the Lexical Analyzer**:
-   ```bash
-   lexer.exe < input.c
-   ```
-   - Replace `lexer.exe` with `./lexer` if you are on Linux or macOS.
-   - The analyzer processes the `input.c` file and outputs the tokenized result. 🌟
+   - For **Lexer 1.0**:
+     ```bash
+     lexer.exe < input.c
+     ```
+     - Replace `lexer.exe` with `./lexer` if you are on Linux or macOS.
+     - The analyzer processes the `input.c` file and outputs the tokenized result. 🌟
+
+   - For **Lexer 2.0**:
+     ```bash
+     lexer.exe
+     ```
+     - Enter the code directly in the command window.
+     - Type `END` (case-insensitive) on a new line to mark the end of input and process the output.
 
 7. **Output**:
    The output lists tokens with the following details:
@@ -55,10 +63,14 @@ Before running the code, ensure you have the following tools installed:
    - Token type (e.g., keyword, identifier, constant)
    - Lexeme
 
-## Future Enhancements 😎
-### Lexer 2.0
-- Input will be taken directly from the command window instead of requiring an external input file.
+   Additionally, Lexer 2.0 displays a summary of:
+   - Total keywords
+   - Total identifiers
+   - Total constants
+   - Total brackets
+   - Total special characters
 
+## Future Enhancements 😎
 ### Lexer 3.0
 - Enhanced output will include:
   - Detailed classification of tokens.
@@ -68,6 +80,10 @@ Before running the code, ensure you have the following tools installed:
 We welcome contributions to this project. Feel free to fork this repository and submit pull requests. Join us in shaping the next iterations of this lexical analyzer! 🚀
 
 Made with ❤️ by Nishant Sheoran
+
+
+
+
 
 
 
