@@ -1,3 +1,10 @@
+# Ignore vs code setting
 .vscode/
-a.exe/
-lex.yy/
+
+# Ignore generated compiled files
+lex.yy
+a.exe
+
+# Ignore other unnecessary system files
+*.o
+*.out
