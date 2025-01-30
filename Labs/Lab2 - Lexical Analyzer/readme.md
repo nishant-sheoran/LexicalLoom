@@ -44,17 +44,23 @@ Before running the code, ensure you have the following tools installed:
 6. **Run the Lexical Analyzer**:
    - For **Lexer 1.0**:
      ```bash
-     lexer.exe < input.c
+     lexer1.exe < input.c
      ```
      - Replace `lexer.exe` with `./lexer` if you are on Linux or macOS.
      - The analyzer processes the `input.c` file and outputs the tokenized result. 🌟
 
    - For **Lexer 2.0**:
      ```bash
-     lexer.exe
+     lexer2.exe
      ```
      - Enter the code directly in the command window.
      - Type `END` (case-insensitive) on a new line to mark the end of input and process the output.
+   - For **Lexer 3.0**:
+     ```bash
+     lexer3.exe
+     ```
+     - Detailed classification of tokens.
+     - Summary lists of keywords, identifiers, constants, etc.
 
 7. **Output**:
    The output lists tokens with the following details:
@@ -70,7 +76,7 @@ Before running the code, ensure you have the following tools installed:
    - Total brackets
    - Total special characters
 
-## Future Enhancements 😎
+## Future Enhancements 😎 (Done ✅)
 ### Lexer 3.0
 - Enhanced output will include:
   - Detailed classification of tokens.
