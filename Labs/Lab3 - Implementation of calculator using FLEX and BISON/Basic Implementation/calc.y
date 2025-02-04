@@ -12,6 +12,7 @@ int yylex();
 }
 
 %token <num> NUMBER
+%type <num> expression equation  /* <<< Added this line */
 
 %left '+' '-'
 %left '*' '/'
