@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "calc1.tab.h"
+#include "calc3.tab.h"
 %}
 
 %%
