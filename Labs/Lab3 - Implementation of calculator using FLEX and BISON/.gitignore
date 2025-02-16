@@ -1,0 +1,10 @@
+# Ignore vs code setting
+.vscode/
+
+# Ignore generated compiled files
+lex.yy.c
+a.exe
+
+# Ignore other unnecessary system files
+*.o
+*.out
