@@ -36,7 +36,7 @@ int main() {
     printf("Enter the number of productions: ");
     scanf("%d", &prodCount);
 
-    printf("Enter the productions (use '|' to separate multiple rules for the same non-terminal):\n");
+    printf("Enter the productions:\n");
     for (int i = 0; i < prodCount; i++) {
         scanf("%s", productions[i]);
     }
