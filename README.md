@@ -12,7 +12,12 @@ LexicalLoom/
 │   ├── Lab2 - Lexical Analyzer/
 │   ├── Lab3 - Implementation of Calculator using FLEX & BISON/
 │   ├── Lab4 - Left Recursion & Left Factoring/
-|   ├──...
+│   ├── Lab5 - First, Follow computation and Predictive Parsing Table/
+│   ├── Lab6 - Shift Reduce Parser/
+│   ├── Lab7 - Computation of Leading and Trailing/
+│   ├── Lab8 - Compuatation of LR(0) items/
+│   ├── Lab9 - Intermediate Code Generation - Postfix, Prefix/
+│   ├── Lab10 - Intermediate Code Generation - Quadruple, Triple, Indirect Triple/
 │── LICENSE
 │── README.md
 ```
